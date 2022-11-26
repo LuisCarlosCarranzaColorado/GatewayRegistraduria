@@ -28,7 +28,7 @@ def create_token():
         access_token = create_access_token(identity=user, expires_delta=expires)
         return jsonify({"token": access_token, "user_id": user["_id"]})
     else:
-        return jsonify({"msg": "Bad username or password"}), 401
+        return jsonify({"msg": "USUARIO O CONTRASEÑA INCORRECTA"}), 401
 
 @app.before_request
 def before_request_callback():
@@ -41,7 +41,7 @@ def before_request_callback():
         if usuario["rol"]is not None:
             tienePersmiso=validarPermiso(endPoint,request.method,usuario["rol"]["_id"])
             if not tienePersmiso:
-                return jsonify({"message": "Permission denied"}), 401
+                return jsonify({"message": "denied"}), 401
         else:
             return jsonify({"message": "Permission denied"}), 401
 def limpiarURL(url):
@@ -70,7 +70,7 @@ def validarPermiso(endPoint,metodo,idRol):
 @app.route("/estudiantes",methods=['GET'])
 def getEstudiantes():
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/estudiantes'
+    url = dataConfig["url-backend-resultados"] + '/estudiantes'
     response = requests.get(url, headers=headers)
     json = response.json()
     return jsonify(json)
@@ -78,14 +78,14 @@ def getEstudiantes():
 def crearEstudiante():
     data = request.get_json()
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/estudiantes'
+    url = dataConfig["url-backend-resultados"] + '/estudiantes'
     response = requests.post(url, headers=headers,json=data)
     json = response.json()
     return jsonify(json)
 @app.route("/estudiantes/<string:id>",methods=['GET'])
 def getEstudiante(id):
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/estudiantes/'+id
+    url = dataConfig["url-backend-resultados"] + '/estudiantes/'+id
     response = requests.get(url, headers=headers)
     json = response.json()
     return jsonify(json)
@@ -93,14 +93,14 @@ def getEstudiante(id):
 def modificarEstudiante(id):
     data = request.get_json()
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/estudiantes/'+id
+    url = dataConfig["url-backend-resultados"] + '/estudiantes/'+id
     response = requests.put(url, headers=headers, json=data)
     json = response.json()
     return jsonify(json)
 @app.route("/estudiantes/<string:id>",methods=['DELETE'])
 def eliminarEstudiante(id):
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/estudiantes/' + id
+    url = dataConfig["url-backend-resultados"] + '/estudiantes/' + id
     response = requests.delete(url, headers=headers)
     json = response.json()
     return jsonify(json)
@@ -108,7 +108,7 @@ def eliminarEstudiante(id):
 @app.route("/resultados",methods=['GET'])
 def getResultados():
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/resultados'
+    url = dataConfig["url-backend-resultados"] + '/resultados'
     response = requests.get(url, headers=headers)
     json = response.json()
     return jsonify(json)
@@ -116,16 +116,82 @@ def getResultados():
 @app.route("/resultados/<string:id>",methods=['GET'])
 def getResultado(id):
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    url = dataConfig["url-backend-academic"] + '/resultados/'+id
+    url = dataConfig["url-backend-resultados"] + '/resultados/'+id
     response = requests.get(url, headers=headers)
     json = response.json()
     return jsonify(json)
 
+@app.route("/usuarios",methods=['GET'])
+def getUsuarios():
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-security"] + '/usuarios'
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+
+@app.route("/permisos",methods=['POST'])
+def crearPermiso():
+    data = request.get_json()
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-security"] + '/permisos'
+    response = requests.post(url, headers=headers,json=data)
+    json = response.json()
+    return jsonify(json)
+
+@app.route("/permisos",methods=['GET'])
+def GetPermiso():
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-security"] + '/permisos'
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+
+###################################################################################
+@app.route("/mesas",methods=['GET'])
+def GetMesas():
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/mesas'
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+
+@app.route("/mesa/<string:id>",methods=['GET'])
+def getMesa(id):
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/mesa/'+id
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+@app.route("/mesas", methods=['POST'])
+def crearMesa():
+    data = request.get_json()
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/mesas'
+    response = requests.post(url, headers=headers, json=data)
+    json = response.json()
+    return jsonify(json)
+@app.route("/mesa/<string:id>",methods=['PUT'])
+def modificarMesa(id):
+    data = request.get_json()
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/mesa/'+id
+    response = requests.put(url, headers=headers, json=data)
+    json = response.json()
+    return jsonify(json)
+@app.route("/mesa/<string:id>",methods=['DELETE'])
+def eliminarMesa(id):
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/mesa/' + id
+    response = requests.delete(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+###################################################################################
 @app.route("/",methods=['GET'])
 def test():
     json = {}
     json["message"]="Server running ..."
     return jsonify(json)
+
 
 def loadFileConfig():
     with open('config.json') as f:
