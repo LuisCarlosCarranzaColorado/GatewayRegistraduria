@@ -41,7 +41,7 @@ def before_request_callback():
         if usuario["rol"]is not None:
             tienePersmiso=validarPermiso(endPoint,request.method,usuario["rol"]["_id"])
             if not tienePersmiso:
-                return jsonify({"message": "denied"}), 401
+                return jsonify({"message": "acceso denegado o no hay rol"}), 401
         else:
             return jsonify({"message": "Permission denied"}), 401
 def limpiarURL(url):
@@ -183,6 +183,45 @@ def eliminarMesa(id):
     headers = {"Content-Type": "application/json; charset=utf-8"}
     url = dataConfig["url-backend-resultados"] + '/mesa/' + id
     response = requests.delete(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+###################################################################################
+@app.route("/partidos/<string:id>",methods=['GET'])
+def getPartido(id):
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/partidos/'+id
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+@app.route("/partidos",methods=['GET'])
+def getPartidos():
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/partidos'
+    response = requests.get(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+
+@app.route("/partidos/<string:id>",methods=['DELETE'])
+def eliminarPartido(id):
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/partidos/' + id
+    response = requests.delete(url, headers=headers)
+    json = response.json()
+    return jsonify(json)
+@app.route("/partidos", methods=['POST'])
+def crearPartido():
+    data = request.get_json()
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/partidos'
+    response = requests.post(url, headers=headers, json=data)
+    json = response.json()
+    return jsonify(json)
+@app.route("/partidos/<string:id>",methods=['PUT'])
+def modificarPartido(id):
+    data = request.get_json()
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    url = dataConfig["url-backend-resultados"] + '/partidos/'+id
+    response = requests.put(url, headers=headers, json=data)
     json = response.json()
     return jsonify(json)
 ###################################################################################
